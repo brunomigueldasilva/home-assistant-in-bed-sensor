@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script: 04_evaluate_metrics.py
-Objective: Calculate and compare evaluation metrics for all trained models
+==============================================================================
+IN BED PREDICTION - METRICS EVALUATION
+==============================================================================
+
+Purpose: Calculate and compare performance metrics for all trained models
+
+This script:
+1. Loads ground truth labels (y_test) and model predictions
+2. Calculates 6 key metrics (Accuracy, Precision, Recall, Specificity, F1-Score, ROC-AUC)
+3. Compares all models in a comparative table
+4. Identifies best performing model by F1-Score
+5. Analyzes metric trade-offs (Precision vs Recall)
+6. Discusses why accuracy alone is insufficient for imbalanced data
+7. Saves comparative metrics to CSV and Markdown formats
+
 Author: Bruno Silva
 Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -32,9 +46,9 @@ warnings.filterwarnings('ignore')
 # Configuration Constants
 class Config:
     """Evaluation configuration parameters."""
-    PROCESSED_DATA_DIR = Path('data_processed')
-    MODELS_DIR = Path('models')
-    PREDICTIONS_DIR = Path('predictions')
+    PROCESSED_DATA_DIR = Path('outputs/data_processed')
+    MODELS_DIR = Path('outputs/models')
+    PREDICTIONS_DIR = Path('outputs/predictions')
 
     # Model names (must match training script)
     MODEL_NAMES = [
@@ -46,8 +60,8 @@ class Config:
     ]
 
     # Output files
-    OUTPUT_CSV = 'comparative_metrics.csv'
-    OUTPUT_MD = 'comparative_metrics.md'
+    OUTPUT_CSV = 'outputs/comparative_metrics.csv'
+    OUTPUT_MD = 'outputs/comparative_metrics.md'
 
     # Thresholds
     LOW_RECALL_THRESHOLD = 0.3  # Models below this may be biased

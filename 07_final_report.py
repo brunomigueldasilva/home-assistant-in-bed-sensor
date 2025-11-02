@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script: 07_final_report.py
-Objective: Generate comprehensive final report in Markdown format
+==============================================================================
+IN BED PREDICTION - FINAL REPORT GENERATION
+==============================================================================
+
+Purpose: Generate comprehensive Markdown report summarizing entire project
+
+This script:
+1. Aggregates results from all previous analysis scripts
+2. Compiles project introduction and methodology
+3. Summarizes exploratory data analysis findings
+4. Documents preprocessing steps and decisions
+5. Presents model comparison and evaluation results
+6. Includes confusion matrix and ROC curve insights
+7. Provides conclusions and recommendations for deployment
+
 Author: Bruno Silva
 Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -36,16 +50,16 @@ NUMPY_VERSION = np.__version__
 # Configuration Constants
 class Config:
     """Final report generation configuration parameters."""
-    REPORT_FILE = 'FINAL_REPORT.md'
     OUTPUT_DIR = Path('outputs')
-    DATA_PROCESSED_DIR = Path('data_processed')
+    REPORT_FILE = Path(OUTPUT_DIR / 'FINAL_REPORT.md')
+    DATA_PROCESSED_DIR = Path(OUTPUT_DIR / 'data_processed')
 
     # Input files
-    DATASET_CSV = 'dataset.csv'
-    TRAINING_TIMES_CSV = 'training_times.csv'
-    COMPARATIVE_METRICS_CSV = 'comparative_metrics.csv'
-    AUC_COMPARISON_CSV = 'auc_comparison.csv'
-    METADATA_PKL = DATA_PROCESSED_DIR / 'metadata.pkl'
+    DATASET_CSV = Path(OUTPUT_DIR / 'dataset.csv')
+    TRAINING_TIMES_CSV = Path(OUTPUT_DIR / 'training_times.csv')
+    COMPARATIVE_METRICS_CSV = Path(OUTPUT_DIR / 'comparative_metrics.csv')
+    AUC_COMPARISON_CSV = Path(OUTPUT_DIR / 'auc_comparison.csv')
+    METADATA_PKL = Path(OUTPUT_DIR / 'metadata.pkl')
 
     # Output images
     CONFUSION_MATRIX_PNG = OUTPUT_DIR / 'confusion_matrix.png'
@@ -385,7 +399,8 @@ def write_confusion_matrix() -> str:
 """
 
     if Config.CONFUSION_MATRIX_PNG.exists():
-        content += f"![Confusion Matrix]({Config.CONFUSION_MATRIX_PNG})\n\n"
+        content += f"![Confusion Matrix]({
+            Config.CONFUSION_MATRIX_PNG.name})\n\n"
 
     content += """### Error Analysis
 
@@ -422,7 +437,7 @@ def write_roc_curves() -> str:
 """
 
     if Config.ROC_CURVES_PNG.exists():
-        content += f"![ROC Curves]({Config.ROC_CURVES_PNG})\n\n"
+        content += f"![ROC Curves]({Config.ROC_CURVES_PNG.name})\n\n"
 
     df_auc = safe_read_csv(Config.AUC_COMPARISON_CSV)
     if df_auc is not None:

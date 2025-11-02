@@ -49,14 +49,14 @@ The system will automatically:
 After completion, you'll find:
 
 ```
-📊 dataset.csv                    # Consolidated dataset
-📁 data_processed/                # Preprocessed data & models
-📁 models/                        # Trained ML models
-📁 predictions/                   # Model predictions
-📁 outputs/                       # Visualizations (confusion matrix, ROC)
-📄 comparative_metrics.csv        # Performance comparison
-📄 FINAL_REPORT.md                # Complete analysis report
-📄 execution.log                  # Execution log
+📊 outputs/dataset.csv              # Consolidated dataset
+📁 outputs/data_processed/          # Preprocessed data & models
+📁 outputs/models/                  # Trained ML models
+📁 outputs/predictions/             # Model predictions
+📁 outputs/                         # Visualizations (confusion matrix, ROC)
+📄 outputs/comparative_metrics.csv  # Performance comparison
+📄 outputs/FINAL_REPORT.md          # Complete analysis report
+📄 execution.log                    # Execution log
 ```
 
 ---

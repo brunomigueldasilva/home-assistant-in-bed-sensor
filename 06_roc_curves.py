@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script: 06_roc_curves.py
-Objective: Generate and compare ROC curves for all trained models
+==============================================================================
+IN BED PREDICTION - ROC CURVE ANALYSIS
+==============================================================================
+
+Purpose: Compare model discrimination ability across all thresholds
+
+This script:
+1. Loads all trained models and test data
+2. Extracts prediction probabilities/scores from each model
+3. Calculates ROC curves (TPR vs FPR at different thresholds)
+4. Computes AUC (Area Under Curve) for each model
+5. Creates comparative ROC curve visualization
+6. Ranks models by AUC score
+7. Analyzes agreement between AUC and F1-Score rankings
+
 Author: Bruno Silva
 Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -32,9 +46,9 @@ plt.rcParams['font.size'] = 11
 # Configuration Constants
 class Config:
     """ROC curves analysis configuration parameters."""
-    PROCESSED_DATA_DIR = Path('data_processed')
-    MODELS_DIR = Path('models')
     OUTPUT_DIR = Path('outputs')
+    MODELS_DIR = Path(OUTPUT_DIR / 'models')
+    PROCESSED_DATA_DIR = Path(OUTPUT_DIR / 'data_processed')
 
     # Model names (must match training script)
     MODEL_NAMES = [
@@ -51,8 +65,8 @@ class Config:
     # Output files
     OUTPUT_PNG = 'roc_curves.png'
     OUTPUT_PDF = 'roc_curves.pdf'
-    OUTPUT_CSV = 'auc_comparison.csv'
-    METRICS_CSV = 'comparative_metrics.csv'
+    OUTPUT_CSV = 'outputs/auc_comparison.csv'
+    METRICS_CSV = 'outputs/comparative_metrics.csv'
 
     # Visualization settings
     DPI = 300

@@ -1,10 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script: 01_exploratory_analysis.py
-Objective: Exploratory data analysis for binary classification - In bed prediction
+==============================================================================
+IN BED PREDICTION - EXPLORATORY DATA ANALYSIS
+==============================================================================
+
+Purpose: Analyze sensor data to predict when person is lying in bed
+
+This script:
+1. Loads 7 sensor CSV files (lights, blinds, motion, TV) + sleep tracking
+2. Creates target variable 'in_bed' based on sleep windows
+3. Consolidates data and engineers temporal features (30-min routines)
+4. Analyzes class imbalance and feature correlations
+5. Creates 7 comprehensive visualizations
+6. Saves consolidated dataset ready for preprocessing
+
 Author: Bruno Silva
 Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -23,23 +36,52 @@ from sklearn.preprocessing import LabelEncoder
 
 warnings.filterwarnings('ignore')
 
+
+# Configuration Constants
+class Config:
+    """Exploratory analysis configuration parameters."""
+    # Directories
+    INPUT_DIR = Path('inputs')
+    OUTPUT_DIR = Path('outputs')
+    GRAPHICS_DIR = OUTPUT_DIR / 'graphics'
+
+    # Output files
+    DATASET_CSV = OUTPUT_DIR / 'dataset.csv'
+
+    # Visualization settings
+    DPI = 300
+    FIGSIZE = (12, 6)
+    FONT_SIZE = 10
+
+    # Column names constants
+    DATE_OF_SLEEP = "SleepScore 4 semanas"
+    BED_TIME = 'Hora de deitar'
+    WAKE_TIME = 'Hora a que acordou'
+
+    # Class labels
+    IN_BED = 'In Bed'
+    NOT_IN_BED = 'Not In Bed'
+
+    # Sensor files
+    SENSOR_FILES = {
+        'bedroom_blinds': 'bedroom_blinds.csv',
+        'hallway_light': 'hallway_light.csv',
+        'bedroom_light': 'bedoroom_light.csv',
+        'wc_light': 'wc_light.csv',
+        'bedroom_tv': 'bedroom_tv.csv',
+        'motion': 'hallway_motion_sensor.csv'
+    }
+    SLEEP_FILE = 'sleep.csv'
+
+    # Feature engineering
+    TIME_WINDOW_MINUTES = 30
+
+
 # Visualization configuration
 plt.style.use('seaborn-v0_8-darkgrid')
 sns.set_palette("husl")
-plt.rcParams['figure.figsize'] = (12, 6)
-plt.rcParams['font.size'] = 10
-
-# Global configuration
-OUTPUT_DIR = Path('outputs')
-INPUT_DIR = Path('inputs')
-
-IN_BED = 'In Bed'
-NOT_IN_BED = 'Not In Bed'
-
-# Column names constants
-DATE_OF_SLEEP = "SleepScore 4 semanas"
-BED_TIME = 'Hora de deitar'
-WAKE_TIME = 'Hora a que acordou'
+plt.rcParams['figure.figsize'] = Config.FIGSIZE
+plt.rcParams['font.size'] = Config.FONT_SIZE
 
 
 # ==============================================================================
@@ -49,7 +91,7 @@ WAKE_TIME = 'Hora a que acordou'
 
 def save_plot(filename: str, dpi: int = 300) -> None:
     """Save current plot to outputs folder."""
-    filepath = OUTPUT_DIR / filename
+    filepath = Path(Config.GRAPHICS_DIR) / filename
     plt.tight_layout()
     plt.savefig(filepath, dpi=dpi, bbox_inches='tight')
     print(f"  → Plot saved: {filepath}")
@@ -132,31 +174,34 @@ def load_sleep_data(filepath: Path) -> Optional[pd.DataFrame]:
         print(f"  Original columns: {list(sleep_df.columns)}")
 
         # Keep only the necessary columns
-        columns_to_keep = [DATE_OF_SLEEP, BED_TIME, WAKE_TIME]
+        columns_to_keep = [
+            Config.DATE_OF_SLEEP,
+            Config.BED_TIME,
+            Config.WAKE_TIME]
         sleep_df = sleep_df[columns_to_keep].copy()
 
         # Convert date column
-        sleep_df[DATE_OF_SLEEP] = pd.to_datetime(
-            sleep_df[DATE_OF_SLEEP], errors='coerce'
+        sleep_df[Config.DATE_OF_SLEEP] = pd.to_datetime(
+            sleep_df[Config.DATE_OF_SLEEP], errors='coerce'
         ).dt.date
 
         # Convert time columns
-        sleep_df[BED_TIME] = pd.to_datetime(
-            sleep_df[BED_TIME], errors='coerce').dt.time
-        sleep_df[WAKE_TIME] = pd.to_datetime(
-            sleep_df[WAKE_TIME], errors='coerce').dt.time
+        sleep_df[Config.BED_TIME] = pd.to_datetime(
+            sleep_df[Config.BED_TIME], errors='coerce').dt.time
+        sleep_df[Config.WAKE_TIME] = pd.to_datetime(
+            sleep_df[Config.WAKE_TIME], errors='coerce').dt.time
 
         # Combine date + time into full datetime
-        sleep_df[BED_TIME] = sleep_df.apply(
-            lambda r: pd.Timestamp.combine(r[DATE_OF_SLEEP], r[BED_TIME])
-            if pd.notnull(r[BED_TIME]) and pd.notnull(r[DATE_OF_SLEEP])
+        sleep_df[Config.BED_TIME] = sleep_df.apply(
+            lambda r: pd.Timestamp.combine(r[Config.DATE_OF_SLEEP], r[Config.BED_TIME])
+            if pd.notnull(r[Config.BED_TIME]) and pd.notnull(r[Config.DATE_OF_SLEEP])
             else pd.NaT,
             axis=1
         )
 
-        sleep_df[WAKE_TIME] = sleep_df.apply(
-            lambda r: pd.Timestamp.combine(r[DATE_OF_SLEEP], r[WAKE_TIME])
-            if pd.notnull(r[WAKE_TIME]) and pd.notnull(r[DATE_OF_SLEEP])
+        sleep_df[Config.WAKE_TIME] = sleep_df.apply(
+            lambda r: pd.Timestamp.combine(r[Config.DATE_OF_SLEEP], r[Config.WAKE_TIME])
+            if pd.notnull(r[Config.WAKE_TIME]) and pd.notnull(r[Config.DATE_OF_SLEEP])
             else pd.NaT,
             axis=1
         )
@@ -181,15 +226,20 @@ def load_all_data() -> Tuple[Dict[str, pd.DataFrame], Optional[pd.DataFrame]]:
     print_section("1. DATA LOADING")
 
     # Check input folder
-    if not INPUT_DIR.exists():
-        print(f"✗ ERROR: Input folder not found: {INPUT_DIR.absolute()}")
+    if not Config.INPUT_DIR.exists():
         print(
-            f"Please create the '{INPUT_DIR}' folder and place CSV files there.")
-        raise FileNotFoundError(f"Input directory not found: {INPUT_DIR}")
+            f"✗ ERROR: Input folder not found: {
+                Config.INPUT_DIR.absolute()}")
+        print(
+            f"Please create the '{
+                Config.INPUT_DIR}' folder and place CSV files there.")
+        raise FileNotFoundError(
+            f"Input directory not found: {
+                Config.INPUT_DIR}")
 
     # List available CSV files
-    print(f"Searching for CSV files in: {INPUT_DIR.absolute()}")
-    csv_files = list(INPUT_DIR.glob('*.csv'))
+    print(f"Searching for CSV files in: {Config.INPUT_DIR.absolute()}")
+    csv_files = list(Config.INPUT_DIR.glob('*.csv'))
     print(f"CSV files found: {len(csv_files)}")
     for f in csv_files:
         print(f"  - {f.name}")
@@ -201,12 +251,8 @@ def load_all_data() -> Tuple[Dict[str, pd.DataFrame], Optional[pd.DataFrame]]:
 
     # Define sensor file paths
     files = {
-        'bedroom_blinds': INPUT_DIR / 'bedroom_blinds.csv',
-        'hallway_light': INPUT_DIR / 'hallway_light.csv',
-        'bedroom_light': INPUT_DIR / 'bedoroom_light.csv',
-        'wc_light': INPUT_DIR / 'wc_light.csv',
-        'bedroom_tv': INPUT_DIR / 'bedroom_tv.csv',
-        'motion': INPUT_DIR / 'hallway_motion_sensor.csv'
+        key: Config.INPUT_DIR / filename
+        for key, filename in Config.SENSOR_FILES.items()
     }
 
     # Load sensor files
@@ -218,7 +264,7 @@ def load_all_data() -> Tuple[Dict[str, pd.DataFrame], Optional[pd.DataFrame]]:
 
     # Load sleep file
     print("\nLoading sleep data...")
-    sleep_df = load_sleep_data(INPUT_DIR / 'sleep.csv')
+    sleep_df = load_sleep_data(Config.INPUT_DIR / Config.SLEEP_FILE)
 
     return sensor_data, sleep_df
 
@@ -256,8 +302,8 @@ def check_in_bed(timestamp: pd.Timestamp, sleep_windows: pd.DataFrame) -> int:
     timestamp = normalize_timestamp(timestamp)
 
     for _, window in sleep_windows.iterrows():
-        start = window[BED_TIME]
-        end = window[WAKE_TIME]
+        start = window[Config.BED_TIME]
+        end = window[Config.WAKE_TIME]
 
         # Ignore windows with missing values
         if pd.isna(start) or pd.isna(end):
@@ -618,7 +664,7 @@ IMBALANCE DISCUSSION:
     # Plot
     plt.figure(figsize=(10, 6))
     bars = plt.bar(
-        [NOT_IN_BED, IN_BED],
+        [Config.NOT_IN_BED, Config.IN_BED],
         counts.values,
         color=['#3498db', '#e74c3c'],
         alpha=0.7,
@@ -700,7 +746,7 @@ def analyze_categorical_features(
         axes[1].set_title(f'{sensor} - By Class', fontweight='bold')
         axes[1].set_xlabel('')
         axes[1].set_ylabel('Frequency')
-        axes[1].legend([NOT_IN_BED, IN_BED], loc='best')
+        axes[1].legend([Config.NOT_IN_BED, Config.IN_BED], loc='best')
         axes[1].set_xticklabels(
             axes[1].get_xticklabels(),
             rotation=45,
@@ -736,8 +782,8 @@ def analyze_basic_temporal_features(df_pivot: pd.DataFrame) -> None:
     axes[0].grid(axis='y', alpha=0.3)
 
     # Distribution by class
-    for in_bed_val, label, color in [(0, NOT_IN_BED, '#3498db'),
-                                     (1, IN_BED, '#e74c3c')]:
+    for in_bed_val, label, color in [(0, Config.NOT_IN_BED, '#3498db'),
+                                     (1, Config.IN_BED, '#e74c3c')]:
         data = df_pivot[df_pivot['in_bed'] == in_bed_val]['hour']
         axes[1].hist(
             data,
@@ -783,7 +829,7 @@ def analyze_basic_temporal_features(df_pivot: pd.DataFrame) -> None:
     axes[3].set_title('Distribution: Weekend vs Weekday', fontweight='bold')
     axes[3].set_xticklabels(['Weekday', 'Weekend'], rotation=0)
     axes[3].set_ylabel('Frequency')
-    axes[3].legend([NOT_IN_BED, IN_BED])
+    axes[3].legend([Config.NOT_IN_BED, Config.IN_BED])
     axes[3].grid(axis='y', alpha=0.3)
 
     plt.suptitle(
@@ -835,7 +881,7 @@ def visualize_temporal_features(
 
         axes[idx].set_xlabel('Feature Present')
         axes[idx].set_ylabel('Frequency')
-        axes[idx].legend([NOT_IN_BED, IN_BED], loc='best')
+        axes[idx].legend([Config.NOT_IN_BED, Config.IN_BED], loc='best')
 
         # Set x-tick labels based on actual data
         actual_ticks = cross_tab_counts.index.tolist()
@@ -1045,7 +1091,9 @@ RECOMMENDED NEXT STEPS:
 def main() -> None:
     """Main function that coordinates the entire exploratory analysis."""
     # Create output folder
-    OUTPUT_DIR.mkdir(exist_ok=True)
+    Config.GRAPHICS_DIR.mkdir(parents=True, exist_ok=True)
+    print(
+        f"✓ Output folder created/verified: {Config.GRAPHICS_DIR.absolute()}")
 
     print("=" * 80)
     print("EXPLORATORY ANALYSIS - CLASSIFICATION: AM I LYING IN BED?")
@@ -1081,9 +1129,8 @@ def main() -> None:
         analyze_correlations(df_pivot, sensor_columns, temporal_features)
 
         # 10. Save final dataset
-        output_path = 'dataset.csv'
-        df_pivot.to_csv(output_path, index=False)
-        print(f"\n✓ Final dataset saved: {output_path}")
+        df_pivot.to_csv(Config.DATASET_CSV, index=False)
+        print(f"\n✓ Final dataset saved: {Config.DATASET_CSV}")
 
         # 11. Summary
         counts = df_pivot['in_bed'].value_counts().sort_index()

@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Orchestrator for Lab 01.1 - Classification: Predict In Bed Probability
+==============================================================================
+IN BED PREDICTION - PIPELINE ORCHESTRATOR
+==============================================================================
+
+Purpose: Execute complete end-to-end machine learning pipeline
 
 This script automates the execution of all ML pipeline scripts with dependency
 checking, logging, and error handling.
@@ -11,6 +15,20 @@ Usage:
     python 08_orchestrator.py --all        # run complete pipeline
     python 08_orchestrator.py --steps 1,3  # run specific steps
     python 08_orchestrator.py --clean      # clean outputs
+
+This script:
+1. Runs 01_exploratory_analysis.py (EDA and feature engineering)
+2. Runs 02_preprocessing.py (data preparation)
+3. Runs 03_train_models.py (model training)
+4. Runs 04_evaluate_metrics.py (performance evaluation)
+5. Runs 05_confusion_matrix.py (error analysis)
+6. Runs 06_roc_curves.py (threshold-independent evaluation)
+7. Runs 07_final_report.py (comprehensive documentation)
+8. Provides error handling and progress tracking throughout pipeline
+
+Author: Bruno Silva
+Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -69,11 +87,11 @@ class Config:
 
     # File and directory paths
     LOG_FILE = "execution.log"
-    DATASET_FILE = "dataset.csv"
-    PREDICTIONS_DIR = "predictions/"
-    MODELS_DIR = "models/"
-    METRICS_FILE = "comparative_metrics.csv"
-    FINAL_REPORT = "FINAL_REPORT.md"
+    DATASET_FILE = "outputs/dataset.csv"
+    PREDICTIONS_DIR = "outputs/predictions/"
+    MODELS_DIR = "outputs/models/"
+    METRICS_FILE = "outputs/comparative_metrics.csv"
+    FINAL_REPORT = "outputs/FINAL_REPORT.md"
 
     # User interaction prompts
     PROMPT_OPTION = "\nOption: "
@@ -91,7 +109,7 @@ class Config:
     # Expected outputs after each step
     EXPECTED_OUTPUTS: Dict[int, List[str]] = {
         0: [DATASET_FILE, "outputs/"],
-        1: ["data_processed/X_train.pkl", "data_processed/y_train.pkl"],
+        1: ["outputs/data_processed/X_train.pkl", "outputs/data_processed/y_train.pkl"],
         2: [MODELS_DIR, PREDICTIONS_DIR],
         3: [METRICS_FILE],
         4: ["outputs/confusion_matrix.png"],
@@ -508,7 +526,7 @@ def check_all_outputs() -> None:
     """Check all expected outputs."""
     outputs_to_check = [
         (Config.DATASET_FILE, "Consolidated dataset"),
-        ("data_processed/", "Processed data"),
+        ("outputs/data_processed/", "Processed data"),
         (Config.MODELS_DIR, "Trained models"),
         (Config.PREDICTIONS_DIR, "Model predictions"),
         (Config.METRICS_FILE, "Metrics comparison"),

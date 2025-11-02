@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script: 05_confusion_matrix.py
-Objective: Generate and analyze confusion matrix for best model
+==============================================================================
+IN BED PREDICTION - CONFUSION MATRIX ANALYSIS
+==============================================================================
+
+Purpose: Analyze prediction errors in detail for the best model
+
+This script:
+1. Identifies best model from comparative metrics (by F1-Score)
+2. Loads model predictions and ground truth labels
+3. Calculates confusion matrix (TN, FP, FN, TP)
+4. Computes derived metrics (FPR, FNR, Specificity, Recall)
+5. Provides contextual interpretation of errors (impact on sleep quality)
+6. Creates professional confusion matrix visualization
+7. Saves analysis as PNG and PDF for reports
+
 Author: Bruno Silva
 Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -34,13 +48,13 @@ plt.rcParams['font.size'] = 11
 # Configuration Constants
 class Config:
     """Confusion matrix analysis configuration parameters."""
-    PROCESSED_DATA_DIR = Path('data_processed')
-    MODELS_DIR = Path('models')
-    PREDICTIONS_DIR = Path('predictions')
+    PROCESSED_DATA_DIR = Path('outputs/data_processed')
+    MODELS_DIR = Path('outputs/models')
+    PREDICTIONS_DIR = Path('outputs/predictions')
     OUTPUT_DIR = Path('outputs')
 
     # Input/Output files
-    METRICS_CSV = 'comparative_metrics.csv'
+    METRICS_CSV = 'outputs/comparative_metrics.csv'
     OUTPUT_PNG = 'confusion_matrix.png'
     OUTPUT_PDF = 'confusion_matrix.pdf'
 

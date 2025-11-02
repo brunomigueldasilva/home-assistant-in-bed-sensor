@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script: 03_train_models.py
-Objective: Train multiple classification models for in bed prediction
+==============================================================================
+IN BED PREDICTION - MODEL TRAINING
+==============================================================================
+
+Purpose: Train multiple classification algorithms and save predictions
+
+This script:
+1. Loads preprocessed training and test data
+2. Defines 5 classification models (Logistic Regression, KNN, SVM Linear, SVM RBF, Naive Bayes)
+3. Trains each model on training data
+4. Generates predictions for both train and test sets
+5. Saves trained models as pickle files
+6. Saves all predictions for later evaluation
+7. Records and reports training times for each model
+
 Author: Bruno Silva
 Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -29,11 +43,11 @@ warnings.filterwarnings('ignore')
 # Configuration Constants
 class Config:
     """Model training configuration parameters."""
-    PROCESSED_DATA_DIR = Path('data_processed')
-    MODELS_DIR = Path('models')
-    PREDICTIONS_DIR = Path('predictions')
+    PROCESSED_DATA_DIR = Path('outputs/data_processed')
+    MODELS_DIR = Path('outputs/models')
+    PREDICTIONS_DIR = Path('outputs/predictions')
     RANDOM_STATE = 42  # For reproducibility
-    OUTPUT_CSV = 'training_times.csv'
+    OUTPUT_CSV = 'outputs/training_times.csv'
     KB_DIVISOR = 1024  # For file size conversion
 
 

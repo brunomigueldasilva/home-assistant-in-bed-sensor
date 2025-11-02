@@ -215,10 +215,11 @@ home-assistant-in-bed-sensor/
 ├── 07_final_report.py           # Step 7: Final report
 ├── 08_orchestrator.py           # Pipeline orchestrator
 │
-├── outputs/                     # Generated plots (auto-created)
-├── data_processed/              # Processed datasets (auto-created)
-├── models/                      # Trained models (auto-created)
-├── predictions/                 # Model predictions (auto-created)
+├── outputs/                     # Generated files (auto-created)
+│   ├── graphics/                # Generated plots (auto-created)
+│   ├── data_processed/          # Processed datasets (auto-created)
+│   ├── models/                  # Trained models (auto-created)
+│   └── predictions/             # Model predictions (auto-created)
 │
 ├── requirements.txt
 ├── README.md
@@ -307,8 +308,8 @@ The project follows a **7-step automated machine learning pipeline**:
 - Analyzes class distribution and feature correlations
 
 **Outputs**:
-- `dataset.csv` - Consolidated dataset
-- `outputs/` - EDA visualizations
+- `outputs/dataset.csv` - Consolidated dataset
+- `outputs/`            - EDA visualizations
 
 ---
 

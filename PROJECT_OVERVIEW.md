@@ -53,10 +53,11 @@ This is a **production-ready machine learning pipeline** that predicts whether a
 │
 └── 📁 Data & Outputs
     ├── inputs/                   ← Your CSV sensor files
-    ├── outputs/                  ← Visualizations (PNG)
-    ├── data_processed/           ← Preprocessed datasets
-    ├── models/                   ← Trained ML models
-    ├── predictions/              ← Model predictions
+    ├── outputs/                  ← output files
+    │   ├── graphics/             ← Visualizations (PNG)
+    │   ├── data_processed/       ← Preprocessed datasets
+    │   ├── models/               ← Trained ML models
+    │   └── predictions/          ← Model predictions
     └── FINAL_REPORT.md           ← Auto-generated analysis
 ```
 
@@ -179,34 +180,34 @@ last_changed,state,sensor
 After running the complete pipeline:
 
 ```
-✅ dataset.csv                      # Consolidated sensor data
-✅ data_processed/                  # Preprocessed train/test sets
+✅ outputs/dataset.csv             # Consolidated sensor data
+✅ outputs/data_processed/         # Preprocessed train/test sets
    ├── X_train.pkl
    ├── X_test.pkl
    ├── y_train.pkl
    ├── y_test.pkl
    └── scaler.pkl
 
-✅ models/                          # 5 trained models
+✅ outputs/models/                 # 5 trained models
    ├── logistic_regression.pkl
    ├── knn.pkl
    ├── svm_linear.pkl
    ├── svm_rbf.pkl
    └── naive_bayes.pkl
 
-✅ predictions/                     # Model predictions
+✅ outputs/predictions/            # Model predictions
    ├── logistic_regression_predictions.csv
    └── ... (all models)
 
-✅ outputs/                         # Visualizations
+✅ outputs/                        # Visualizations
    ├── confusion_matrix.png
    └── roc_curves.png
 
-✅ comparative_metrics.csv          # Performance comparison
+✅ comparative_metrics.csv         # Performance comparison
 ✅ auc_comparison.csv              # ROC-AUC scores
 ✅ training_times.csv              # Training durations
 ✅ FINAL_REPORT.md                 # Complete analysis
-✅ execution.log                    # Execution log
+✅ execution.log                   # Execution log
 ```
 
 ---

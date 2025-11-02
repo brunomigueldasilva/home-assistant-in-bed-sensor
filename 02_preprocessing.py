@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script: 02_preprocessing.py
-Objective: Data preprocessing for binary classification - In bed prediction
+==============================================================================
+IN BED PREDICTION - DATA PREPROCESSING
+==============================================================================
+
+Purpose: Prepare sensor data for machine learning model training
+
+This script:
+1. Loads consolidated dataset from exploratory analysis
+2. Separates features (X) from target variable (y)
+3. Applies One-Hot Encoding to categorical sensor states
+4. Performs stratified train-test split (80/20) maintaining class balance
+5. Scales features using StandardScaler (fitted only on training data)
+6. Saves preprocessed data (X_train, X_test, y_train, y_test, scaler)
+7. Prevents data leakage by proper separation of train/test processing
+
 Author: Bruno Silva
 Date: 2025
+==============================================================================
 """
 
 # ==============================================================================
@@ -26,7 +40,8 @@ warnings.filterwarnings('ignore')
 # Configuration Constants
 class Config:
     """Preprocessing configuration parameters."""
-    PROCESSED_DATA_DIR = Path('data_processed')
+    INPUT_FILE = Path('outputs/dataset.csv')
+    PROCESSED_DATA_DIR = Path('outputs/data_processed')
     RANDOM_STATE = 42  # For reproducibility
     TEST_SIZE = 0.20  # 80% train, 20% test
     MAX_COLUMNS_TO_DISPLAY = 10  # Number of columns to show in summaries
@@ -96,7 +111,7 @@ def load_and_verify_data() -> pd.DataFrame:
 
     # Load dataset
     try:
-        df = pd.read_csv('dataset.csv')
+        df = pd.read_csv(Config.INPUT_FILE)
         print("✓ Dataset loaded successfully: dataset.csv")
         print(f"  Shape: {df.shape} (rows, columns)")
     except FileNotFoundError:
